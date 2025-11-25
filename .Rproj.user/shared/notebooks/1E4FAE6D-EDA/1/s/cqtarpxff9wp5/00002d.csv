@@ -1,0 +1,8 @@
+"0","diabetes_data |>"
+"0","  group_by(diabetes_binary) |>"
+"0","  summarize(across(where(is.numeric), "
+"0","                   list(""mean"" = mean, "
+"0","                        ""median"" = median, "
+"0","                        ""min"" = min, "
+"0","                        ""max"" = max), "
+"0","                   .names = ""{.fn}_{.col}""))"

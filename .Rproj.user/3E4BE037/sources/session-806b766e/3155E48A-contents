@@ -1,0 +1,118 @@
+---
+title: "R Objects, Workflow, and Functions"
+format: pdf
+editor: visual
+---
+
+# Vectors
+
+Create a vector.
+
+```{r}
+set.seed(42)
+my_unif <- runif(30)
+is.vector(my_unif)
+```
+
+Note: set.seed() will ensure we get the same results if we run the random generator again.
+
+Subset that object.
+
+```{r}
+my_unif[1:10]
+```
+
+```{r}
+my_unif[c(1:3, 15:17)]
+```
+
+Sort the vector.
+
+```{r}
+sort(my_unif)
+```
+
+Create a vector with strings in it.
+
+```{r}
+char_vec <- c('Kim', 'Alice', 'Dylan', 'Luna', 'Stella')
+sort(char_vec)
+```
+
+Note: If there is a combination of numberical and character elements, sort function will sort by numbers first.
+
+# Data Frames
+
+```{r}
+data(trees)
+trees
+str(trees)
+```
+
+Subset a column.
+
+```{r}
+trees$Height
+```
+
+Get attributes from the data frame.
+
+```{r}
+attributes(trees)
+names(trees)
+colnames(trees)[2:3]
+```
+
+# Lists
+
+Investigating data frame from before.
+
+```{r}
+is.list(trees)
+```
+
+```{r}
+is.data.frame(trees)
+```
+
+Can subset as a list.
+
+```{r}
+trees[1]
+```
+
+```{r}
+trees[[1]]
+```
+
+```{r}
+trees[1:2]
+```
+
+```{r}
+trees[[2]]
+```
+
+Look at linear model fit.
+
+```{r}
+fit <- lm(Volume ~ Height + Girth, data = trees)
+```
+
+Look at structure but restrict info.
+
+```{r}
+str(fit, max.level=1)
+```
+
+Some helper functions exist.
+
+```{r}
+fit$coefficients
+coef(fit)
+```
+
+```{r}
+fit$residuals
+residuals(fit)
+```

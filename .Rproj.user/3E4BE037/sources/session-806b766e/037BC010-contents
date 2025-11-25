@@ -1,0 +1,145 @@
+---
+title: "EDA"
+author: "Kim Costello"
+format: html
+editor: visual
+---
+```{r}
+library(readr)    #to read in CSV file
+library(psych)    #to describe the data
+library(dplyr)    #to clean the data
+library(janitor)  #to clean names
+```
+
+
+## Diabetes Health Indicators Dataset
+
+#### Intro:
+
+
+
+
+
+#### The Data:
+
+First, read in the data provided in a CSV file. 
+```{r}
+diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+```
+Let's determine if there are any missing values in the dataset.  
+```{r}
+colSums(is.na(diabetes_data))
+```
+There are no missing values in the dataset. 
+
+The following contains the structure of the data set, so we can see the different variables and how they are being stored.
+```{r}
+str(diabetes_data)
+```
+
+```{r}
+diabetes_data <- diabetes_data |>
+  mutate(
+    Diabetes_binary = factor(Diabetes_binary, 
+                             levels = c(0, 1),
+                             labels = c("No diabetes",
+                                        "Prediabetes/Diabetes")),
+    HighBP = factor(HighBP,
+                    levels = c(0, 1),
+                    labels = c("Not high BP", "High BP")),
+    HighChol = factor(HighChol,
+                      levels = c(0, 1),
+                      labels = c("Not high cholesterol", "High cholesterol")), 
+    Smoker = factor(Smoker,
+                      levels = c(0, 1),
+                      labels = c("Non-smoker", "Smoker")),
+    Stroke = factor(Stroke,
+                      levels = c(0, 1),
+                      labels = c("No stroke", "Stroke")),
+    HeartDiseaseorAttack = factor(HeartDiseaseorAttack,
+                                  levels = c(0, 1),
+                                  labels = c("No heart disease/attack", 
+                                             "Heart disease/attack")),
+    PhysActivity = factor(PhysActivity,
+                      levels = c(0, 1),
+                      labels = c("No physical activity", "Physical activity")),
+    Fruits = factor(Fruits,
+                      levels = c(0, 1),
+                      labels = c("No fruits", "Fruits")),
+    Veggies = factor(Veggies,
+                      levels = c(0, 1),
+                      labels = c("No veggies", "Veggies")),
+    HvyAlcoholConsump = factor(HvyAlcoholConsump,
+                      levels = c(0, 1),
+                      labels = c("Not a heavy drinker", "Heavy drinker")),
+    AnyHealthcare = factor(AnyHealthcare,
+                      levels = c(0, 1),
+                      labels = c("No healthcare", "Healthcare")),
+    HvyAlcoholConsump = factor(HvyAlcoholConsump,
+                      levels = c(0, 1),
+                      labels = c("Not a heavy drinker", "Heavy drinker")),
+    GenHlth = factor(GenHlth,
+                     levels = c(1, 2, 3, 4, 5),
+                     labels = c("Excellent", "Very good", 
+                                "Good", "Fair", "Poor")),
+    DiffWalk = factor(DiffWalk,
+                      levels = c(0, 1),
+                      labels = c("No difficulty walking", 
+                                 "Difficulty walking")),
+    Sex = factor(Sex,
+                 levels = c(0, 1),
+                 labels = c("Female", "Male")),
+    Age = factor(Age,
+                 levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+                 labels = c("18-24", "25-29", "30-34", "35-39", "40-44",
+                            "45-49", "50-54", "55-59", "60-64", "65-69",
+                            "70-74", "75-79", "80 or older")),
+    Education = factor(Education,
+                       levels = c(1, 2, 3, 4, 5, 6),
+                       labels = c("None or Kindergarten only", 
+                                  "Elementary",
+                                  "Some high school",
+                                  "High school graduate",
+                                  "Some college or technical school",
+                                  "College graduate")),
+    Income = factor(Income,
+                      levels = c(1, 2, 3, 4, 5, 6, 7, 8),
+                      labels = c("Less than 10k", 
+                                 "10k to <15k",
+                                 "15k to <20k",
+                                 "20k to <25k",
+                                 "25k to <35k",
+                                 "35k to <50k",
+                                 "50k to <75k",
+                                 "75k or more")),
+    ) |>
+  select(-CholCheck, -NoDocbcCost) |> #removing variables that we won't use
+  clean_names("snake")     #cleaning names for easier coding
+
+
+```
+ 
+#### Data Summaries
+
+```{r}
+diabetes_data |>
+  group_by(diabetes_binary) |>
+  summarize(across(where(is.numeric), 
+                   list("mean" = mean, 
+                        "median" = median, 
+                        "min" = min, 
+                        "max" = max), 
+                   .names = "{.fn}_{.col}"))
+```
+
+
+```{r}
+table(diabetes_data$age, diabetes_data$diabetes_binary)
+```
+
+```{r}
+table(diabetes_data$heart_diseaseor_attack, 
+      diabetes_data$sex, 
+      diabetes_data$diabetes_binary)
+```
+

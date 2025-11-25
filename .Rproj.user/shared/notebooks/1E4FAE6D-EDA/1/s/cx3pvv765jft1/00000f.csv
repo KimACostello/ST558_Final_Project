@@ -1,0 +1,4 @@
+"0","library(readr)    #to read in CSV file"
+"0","library(psych)    #to describe the data"
+"0","library(dplyr)    #to clean the data"
+"0","library(janitor)  #to clean names"
