@@ -94,8 +94,13 @@ function() {
 #* Predictor variables
 #* @param var
 #* @get /pred
-function() {
-    
+function(var) {
+  column <- diabetes_data[[var]]
+  if (is.numeric(column)) {return(mean(column))}
+  
+  else {uni_var <- unique(column)
+  return(uni_var[which.max(tabulate(match(column, uni_var)))])
+  }
 }
 
 

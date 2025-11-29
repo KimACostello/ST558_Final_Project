@@ -132,6 +132,7 @@ diabetes_data <- diabetes_data |>
 
 ```
 
+
 #### Data Summaries and Plots
 
 Let's explore the data set to gain some insights into the distributions and relationships. 
