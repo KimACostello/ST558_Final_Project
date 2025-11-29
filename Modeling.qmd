@@ -9,6 +9,7 @@ editor: visual
 library(tidyverse)
 library(tidymodels)
 library(rpart)
+library(ranger)
 ```
 
 
@@ -24,14 +25,14 @@ diabetes_5fold <- vfold_cv(diabetes_train, 5)
 
 Create Recipe
 ```{r}
-tree_recipe <- recipe(diabetes_binary ~ ., data = diabetes_train) |>
+diabetes_recipe <- recipe(diabetes_binary ~ ., data = diabetes_train) |>
   update_role(age, new_role = "ID") |>
-  step_rm(gen_hlth, ment_hlth, any_healthcare) |>
+  step_rm(phys_hlth, ment_hlth, any_healthcare) |>
   step_dummy(high_bp, high_chol, smoker, stroke, phys_activity,
-             heart_diseaseor_attack, hvy_alcohol_consump, sex) |>
+             heart_diseaseor_attack, hvy_alcohol_consump, sex, gen_hlth) |>
   step_normalize(bmi)
 
-tree_recipe
+diabetes_recipe
 ```
 
 Define model and engine. 
@@ -46,15 +47,24 @@ tree_model <- decision_tree(tree_depth = tune(),
 Create workflow.
 ```{r}
 tree_workflow <- workflow() |>
-  add_recipe(tree_recipe) |>
+  add_recipe(diabetes_recipe) |>
   add_model(tree_model)
 ```
+
+Set up own grid of tuning parameters. 
+```{r}
+tree_grid <- grid_regular(cost_complexity(),
+                          tree_depth(),
+                          levels = c(10, 5))
+```
+
 
 Fit workflow to CV folds. 
 ```{r}
 class_wkf_folds <- tree_workflow |>
   tune_grid(resamples = diabetes_5fold,
-            metrics = metric_set(mn_log_loss))
+            metrics = metric_set(mn_log_loss),
+            grid = tree_grid)
 
 class_wkf_folds |>
   collect_metrics() |>
@@ -75,9 +85,70 @@ tree_final_wkf <- tree_workflow |>
 
 ```{r}
 final_tree_fit <- tree_final_wkf |>
-  last_fit(diabetes_split)
+  last_fit(diabetes_split, metrics = metric_set(mn_log_loss))
 
 ```
 
 #### Random Forest
 
+We will use the same recipe, `tree_recipe`, as before. 
+
+Define model, engine, and mode. 
+```{r}
+forest_model <- rand_forest(mtry = tune(), trees = 100) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+```
+
+Create workflow.
+```{r}
+forest_workflow <- workflow() |>
+  add_recipe(diabetes_recipe) |>
+  add_model(forest_model)
+```
+
+```{r}
+forest_fit <- forest_workflow |>
+  tune_grid(resamples = diabetes_5fold,
+            grid = 5,
+            metrics = metric_set(mn_log_loss))
+```
+
+
+```{r}
+forest_fit |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+```
+
+Grab best tuning parameter. 
+```{r}
+forest_best_param <- select_best(forest_fit, metric = "mn_log_loss")
+forest_best_param
+```
+
+Refit on entire training set using this tuning parameter. 
+```{r}
+forest_final_wf <- forest_workflow |>
+  finalize_workflow(forest_best_param)
+
+forest_final_fit <- forest_final_wf |>
+  last_fit(diabetes_split, metrics = metric_set(mn_log_loss))
+```
+
+
+#### Compare Models
+
+```{r}
+rbind(
+  final_tree_fit |>
+    collect_metrics() |>
+    mutate(Model = "Tree", .before = ".metric"),
+  forest_final_fit |>
+    collect_metrics() |>
+    mutate(Model = "Forest", .before = ".metric")
+)
+```
+
+We see the best model (by log loss) is the Random Forest Model.
