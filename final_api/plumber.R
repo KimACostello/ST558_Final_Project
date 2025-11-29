@@ -8,6 +8,7 @@ library(readr)
 library(dplyr)
 library(janitor)
 library(ranger)
+library(yardstick)
 
 diabetes_data <- read_csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
 
@@ -102,12 +103,24 @@ function(var) {
   return(uni_var[which.max(tabulate(match(column, uni_var)))])
   }
 }
+# Three example function calls:
+# http://127.0.0.1:8218/pred?var=bmi
+# http://127.0.0.1:8218/pred?var=high_bp
+# http://127.0.0.1:8218/pred?var=smoker
+
+#* Confusion Matrix
+#* @get /confusion
+#* @serializer png
+function() {
+  predictions <- predict(forest_fit, new_data = diabetes_data)
+  
+  data_with_predictions <- diabetes_data |>
+    bind_cols(predictions)
+  
+  cm <- conf_mat(data_with_predictions, truth = diabetes_binary, estimate = .pred_class)
+  
+  print(autoplot(cm, type = "heatmap"))
+  }
 
 
-# Programmatically alter your API
-#* @plumber
-function(pr) {
-    pr %>%
-        # Overwrite the default serializer to return unboxed JSON
-        pr_set_serializer(serializer_unboxed_json())
-}
+
