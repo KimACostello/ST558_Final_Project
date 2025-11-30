@@ -52,14 +52,14 @@ Other variables of interest, and their possible values (where applicable):
 
 -   Age: Age level category, 1 = 18-24, 2 = 25-29, 3 = 30-34, 4 = 35-39, 5 = 40-44, 6 = 45-49, 7 = 50-54, 8 = 55-59, 9 = 60-64, 10 = 65-69, 11 = 70-74, 12 = 75-79, 13 =80 or older
 
-First, exploratory data analysis will be conducted to get to know the data. We want to understand how the data is stored, determine the rate of missing values, and clean up the data as needed. We want to investigate the distributions with summaries and graphs to gain some insights into the data and relationships between variables. 
+First, exploratory data analysis will be conducted to get to know the data. We want to understand how the data is stored, determine the rate of missing values, and clean up the data as needed. We want to investigate the distributions with summaries and graphs to gain some insights into the data and relationships between variables.
 
-Then, we will want to determine which predictive model, a classification tree or a random forest model, is the best model to use to make a prediction for the response variable, Diabetes Status, given specific predictor variables. 
-
+Then, we will want to determine which predictive model, a classification tree or a random forest model, is the best model to use to make a prediction for the response variable, Diabetes Status, given specific predictor variables.
 
 #### The Data:
 
 The data can be found on kaggle.com and is provided in a CSV file.
+
 ```{r}
 #read in data
 diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
@@ -78,6 +78,7 @@ The following contains the structure of the data set, so we can see the differen
 ```{r}
 str(diabetes_data)
 ```
+
 All of the variables are being stored as numeric. However, most of these variables should be categorical - they have different levels or categories, and you cannot do math on the values (the results would not make sense). Therefore, we will want to convert them to factors.
 
 ```{r}
@@ -132,12 +133,12 @@ diabetes_data <- diabetes_data |>
 
 ```
 
-
 #### Data Summaries and Plots
 
-Let's explore the data set to gain some insights into the distributions and relationships. 
+Let's explore the data set to gain some insights into the distributions and relationships.
 
-The following is the mean, median, minimum, maximum, and interquartile range for the numeric variables, grouped by diabetes status. 
+The following is the mean, median, minimum, maximum, and interquartile range for the numeric variables, grouped by diabetes status.
+
 ```{r}
 diabetes_data |>
   group_by(diabetes_binary) |>
@@ -149,26 +150,31 @@ diabetes_data |>
                         "IQR" = IQR), 
                    .names = "{.fn}_{.col}"))
 ```
-As expected, the mean BMI for individuals with diabetes/prediabetes is higher ,at 31, than those without diabetes at 27. Over 30 is considered to be obese, which obesity has been considered a major risk factor for heart disease. The average number of days of physical illness or injury in the past 30 days is also much higher for those with (pre)diabetes at 8 days verses those without at 3.6 days.  
 
-The following contingency table will give the number of individuals with/without diabetes based on their age group. 
+As expected, the mean BMI for individuals with diabetes/prediabetes is higher ,at 31, than those without diabetes at 27. Over 30 is considered to be obese, which obesity has been considered a major risk factor for heart disease. The average number of days of physical illness or injury in the past 30 days is also much higher for those with (pre)diabetes at 8 days verses those without at 3.6 days.
+
+The following contingency table will give the number of individuals with/without diabetes based on their age group.
+
 ```{r}
 table(diabetes_data$age, diabetes_data$diabetes_binary)
 ```
-The highest number of individuals with diabetes/prediabetes occurs in the 65-69 age group, and the lowest is the youngest age group, 18-24. 
 
-The following contingency table will give us the number of individuals with/without diabetes by sex and by whether they've had heart disease or a heart attack. 
+The highest number of individuals with diabetes/prediabetes occurs in the 65-69 age group, and the lowest is the youngest age group, 18-24.
+
+The following contingency table will give us the number of individuals with/without diabetes by sex and by whether they've had heart disease or a heart attack.
+
 ```{r}
 table(diabetes_data$heart_diseaseor_attack, 
       diabetes_data$sex, 
       diabetes_data$diabetes_binary)
 ```
-It may be surprising to see that the number of individuals who have heart disease or who have had a heart attack is higher for those without diabetes (for both sexes) than those who do have diabetes/prediabetes. 
 
+It may be surprising to see that the number of individuals who have heart disease or who have had a heart attack is higher for those without diabetes (for both sexes) than those who do have diabetes/prediabetes.
 
-Let's view some relationships visually. 
+Let's view some relationships visually.
 
-The following barplot displays the number of individuals with/without diabetes according to smoker status and whether or not they've had heart disease or heart attack. 
+The following barplot displays the number of individuals with/without diabetes according to smoker status and whether or not they've had heart disease or heart attack.
+
 ```{r}
 g <- ggplot(data = diabetes_data)
 
@@ -180,9 +186,11 @@ g + geom_bar(aes(x = diabetes_binary, fill = smoker), position = "dodge") +
   easy_center_title() +
   facet_wrap(~ heart_diseaseor_attack)
 ```
-For those who have had a heart attack/disease, more individuals were smokers than non-smokers, but it did not seem to be an indicator of diabetes (there were more smokers and individuals with a heart attack/disease that did not have diabetes). For those who have not had a heart attack or heart disease, smoking status was almost equal (non-smoker vs smoker) for those with diabetes. 
 
-The following violin plot will take a look at BMI related to Sex and Diabetes Status. 
+For those who have had a heart attack/disease, more individuals were smokers than non-smokers, but it did not seem to be an indicator of diabetes (there were more smokers and individuals with a heart attack/disease that did not have diabetes). For those who have not had a heart attack or heart disease, smoking status was almost equal (non-smoker vs smoker) for those with diabetes.
+
+The following violin plot will take a look at BMI related to Sex and Diabetes Status.
+
 ```{r}
 ggplot(diabetes_data, aes(x = sex, y = bmi, fill = diabetes_binary)) +
   geom_violin() +
@@ -194,9 +202,11 @@ ggplot(diabetes_data, aes(x = sex, y = bmi, fill = diabetes_binary)) +
   scale_fill_manual(values = c("lightpink",
                                "lightblue"))
 ```
-The BMI for both sexes is higher for those with diabetes/prediabetes. 
 
-The following density plot also gives the relationship between BMI and diabetes status. 
+The BMI for both sexes is higher for those with diabetes/prediabetes.
+
+The following density plot also gives the relationship between BMI and diabetes status.
+
 ```{r}
 g + geom_density(aes(x = bmi, fill = diabetes_binary), alpha = 0.5) +
   labs(x = "BMI", 
@@ -205,9 +215,11 @@ g + geom_density(aes(x = bmi, fill = diabetes_binary), alpha = 0.5) +
        fill = "Diabetes Status") +
   easy_center_title() 
 ```
-Just as the violin plot above showed, those with prediabetes/diabetes tend to have a higher BMI. 
 
-The following bloxplot will also look at BMI and diabetes status, by those with/without heart disease or heart attack. 
+Just as the violin plot above showed, those with prediabetes/diabetes tend to have a higher BMI.
+
+The following bloxplot will also look at BMI and diabetes status, by those with/without heart disease or heart attack.
+
 ```{r}
 ggplot(diabetes_data, aes(x = diabetes_binary, y = bmi, fill = heart_diseaseor_attack)) +
   geom_boxplot() +
@@ -219,10 +231,11 @@ ggplot(diabetes_data, aes(x = diabetes_binary, y = bmi, fill = heart_diseaseor_a
   scale_fill_manual(values = c("lightpink",
                                "lightblue"))
 ```
-As the other graphs have shown, the mean BMI is greater for those with diabetes/prediabetes. However, the mean BMI is approximately the same (in both diabetes status groups) between those with heart disease/attack and those without. 
 
+As the other graphs have shown, the mean BMI is greater for those with diabetes/prediabetes. However, the mean BMI is approximately the same (in both diabetes status groups) between those with heart disease/attack and those without.
 
-The following density plot show the BMI by diabetes status and physical activity level.  
+The following density plot show the BMI by diabetes status and physical activity level.
+
 ```{r}
 g + geom_density(aes(x = bmi, fill = diabetes_binary), alpha = 0.5) +
   labs(x = "BMI", 
@@ -234,9 +247,11 @@ g + geom_density(aes(x = bmi, fill = diabetes_binary), alpha = 0.5) +
   theme(plot.subtitle = element_text(hjust = 0.5)) +
   facet_wrap(~ phys_activity)
 ```
-The density plot shifts slightly right for those who have not had physical activity (outside of work) in the past 30 days, which means more of the individuals that have not had physical activity have higher BMI's. 
 
-The following barplot shows general health based on diabetes status. 
+The density plot shifts slightly right for those who have not had physical activity (outside of work) in the past 30 days, which means more of the individuals that have not had physical activity have higher BMI's.
+
+The following barplot shows general health based on diabetes status.
+
 ```{r}
 g + geom_bar(aes(x = gen_hlth, fill = diabetes_binary), position = "dodge") +
   labs(x = "General Health Condition", 
@@ -245,10 +260,7 @@ g + geom_bar(aes(x = gen_hlth, fill = diabetes_binary), position = "dodge") +
        fill = "Diabetes Status") +
   easy_center_title()
 ```
-As health condition worsens, the number of those without diabetes decreases. 
-It is surprising to see that the greatest number of individuals with prediabetes/diabetes have "good" health. 
 
-Now that we've seen some relationships in the data, let's take a look at some models that we can use to predict diabetes status. 
+As health condition worsens, the number of those without diabetes decreases. It is surprising to see that the greatest number of individuals with prediabetes/diabetes have "good" health.
 
-
-
+Now that we've seen some relationships in the data, let's take a look at some models that we can use to predict diabetes status.
