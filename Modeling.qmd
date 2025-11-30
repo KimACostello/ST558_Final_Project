@@ -7,11 +7,70 @@ editor: visual
 ## Models to Predict Diabetes Status
 
 ```{r}
+library(readr)
+library(dplyr)
+library(janitor)
 library(tidyverse)
 library(tidymodels)
 library(rpart)
 library(ranger)
 ```
+
+```{r}
+#| echo: false
+#read in and clean data
+diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+
+diabetes_data <- diabetes_data |>
+  mutate(
+    Diabetes_binary = factor(Diabetes_binary, 
+                             levels = c(0, 1),
+                             labels = c("No diabetes",
+                                        "Prediabetes/Diabetes")),
+    HighBP = factor(HighBP,
+                    levels = c(0, 1),
+                    labels = c("Not high BP", "High BP")),
+    HighChol = factor(HighChol,
+                      levels = c(0, 1),
+                      labels = c("Not high cholesterol", "High cholesterol")), 
+    Smoker = factor(Smoker,
+                      levels = c(0, 1),
+                      labels = c("Non-smoker", "Smoker")),
+    Stroke = factor(Stroke,
+                      levels = c(0, 1),
+                      labels = c("No stroke", "Stroke")),
+    HeartDiseaseorAttack = factor(HeartDiseaseorAttack,
+                                  levels = c(0, 1),
+                                  labels = c("No heart disease/attack", 
+                                             "Heart disease/attack")),
+    PhysActivity = factor(PhysActivity,
+                      levels = c(0, 1),
+                      labels = c("No physical activity", "Physical activity")),
+    HvyAlcoholConsump = factor(HvyAlcoholConsump,
+                      levels = c(0, 1),
+                      labels = c("Not a heavy drinker", "Heavy drinker")),
+    AnyHealthcare = factor(AnyHealthcare,
+                      levels = c(0, 1),
+                      labels = c("No healthcare", "Healthcare")),
+    GenHlth = factor(GenHlth,
+                     levels = c(1, 2, 3, 4, 5),
+                     labels = c("Excellent", "Very good", 
+                                "Good", "Fair", "Poor")),
+    Sex = factor(Sex,
+                 levels = c(0, 1),
+                 labels = c("Female", "Male")),
+    Age = factor(Age,
+                 levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+                 labels = c("18-24", "25-29", "30-34", "35-39", "40-44",
+                            "45-49", "50-54", "55-59", "60-64", "65-69",
+                            "70-74", "75-79", "80 or older"))
+    ) |>
+  select(-CholCheck, -NoDocbcCost, -Fruits, -Veggies, -Income, -Education, 
+         -DiffWalk) |> #removing variables that we won't use
+  clean_names("snake")     #cleaning names for easier coding
+
+```
+
 
 Before we fit our models, we will want to split the data into training and test sets, and create our cross-validation folds since we will be comparing different models.  
 ```{r}
