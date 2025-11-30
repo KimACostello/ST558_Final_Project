@@ -9,6 +9,7 @@ library(dplyr)
 library(janitor)
 library(ranger)
 library(yardstick)
+library(tidymodels)
 
 diabetes_data <- read_csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
 
@@ -60,6 +61,10 @@ diabetes_data <- diabetes_data |>
          -DiffWalk) |>
   clean_names("snake")
 
+set.seed(123)
+diabetes_split <- initial_split(diabetes_data, prop = .70)
+diabetes_train <- training(diabetes_split)
+
 diabetes_recipe <- recipe(diabetes_binary ~ ., data = diabetes_train) |>
   update_role(age, new_role = "ID") |>
   step_rm(phys_hlth, ment_hlth, any_healthcare) |>
@@ -83,13 +88,13 @@ forest_fit <- forest_workflow |>
 library(plumber)
 
 #* @apiTitle Diabetes Health Indicators API
-#* @apiDescription PUT DESCRIPTION HERE.
+#* @apiDescription The Diabetes Health Indicators API has three endpoints. The pred endpoint will take in a predictor from the Diabetes Health Indicators data set, and return the mean of that variable (if numeric) or the most prevalent class (if categorical). The info endpoint will provide the author's name and the URL for the EDA and Modeling of the data. The confusion endpoint will display an image of the confusion matrix for the final model fit, a random forest model for the response variable, diabetes status (no diabetes or diabetes/pre-diabetes). 
 
 #* Info endpoint
 #* @get /info
 function() {
     list(Author = "Kim Costello", 
-         URL = "") 
+         URL = "https://kimacostello.github.io/ST558_Final_Project/EDA.html") 
 }
 
 #* Predictor variables
