@@ -11,7 +11,7 @@ library(ranger)
 library(yardstick)
 library(tidymodels)
 
-diabetes_data <- read_csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
+diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 
 diabetes_data <- diabetes_data |>
   mutate(
