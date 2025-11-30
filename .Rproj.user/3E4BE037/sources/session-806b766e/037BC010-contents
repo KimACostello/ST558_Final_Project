@@ -264,3 +264,5 @@ g + geom_bar(aes(x = gen_hlth, fill = diabetes_binary), position = "dodge") +
 As health condition worsens, the number of those without diabetes decreases. It is surprising to see that the greatest number of individuals with prediabetes/diabetes have "good" health.
 
 Now that we've seen some relationships in the data, let's take a look at some models that we can use to predict diabetes status.
+
+[Click here to continue to modeling](Modeling.html)
