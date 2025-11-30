@@ -102,12 +102,16 @@ function() {
 #* @get /pred
 function(var) {
   column <- diabetes_data[[var]]
-  if (is.numeric(column)) {return(mean(column))}
-  
-  else {uni_var <- unique(column)
-  return(uni_var[which.max(tabulate(match(column, uni_var)))])
+  if (is.numeric(column)) {
+    mean_value <- mean(column)
+    print(paste0("The mean value of ", var, " is ", mean_value, "."))}
+  else {
+    uni_var <- unique(column)
+    prev_class <- uni_var[which.max(tabulate(match(column, uni_var)))]
+    print(paste0("The most prevalent class for the ", var, " variable is ", prev_class, "."))
   }
 }
+
 # Three example function calls:
 # http://127.0.0.1:8218/pred?var=bmi
 # http://127.0.0.1:8218/pred?var=high_bp
