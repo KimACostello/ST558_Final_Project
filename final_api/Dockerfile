@@ -2,7 +2,7 @@ FROM rstudio/plumber
 
 RUN apt-get update -qq && apt-get install -y libssl-dev libcurl4-gnutls-dev libpng-dev pandoc
 
-RUN R -e "install.packages(c('readr', 'dplyr', 'janitor', 'ranger', 'yardstick', 'tidymodels'))"
+RUN R -e "install.packages(c('readr', 'dplyr', 'janitor', 'ranger', 'yardstick', 'tidymodels', 'tibble'))"
 COPY plumber.R myAPI.R
 COPY diabetes_binary_health_indicators_BRFSS2015.csv diabetes_binary_health_indicators_BRFSS2015.csv
 
