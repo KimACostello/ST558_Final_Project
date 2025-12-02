@@ -157,9 +157,9 @@ function(high_bp = bp_mode,
 
 
 # Three example function calls:
-# http://127.0.0.1:39458/pred?high_bp=yes&high_chol=yes&bmi=35&smoker=yes&stroke=yes&heart_diseaseor_attack=yes&phys_activity=no&hvy_alcohol_consump=yes&gen_hlth=poor&sex=female
-# http://127.0.0.1:39458/pred?high_bp=no&smoker=no&stroke=yes&heart_diseaseor_attack=yes&phys_activity=no&hvy_alcohol_consump=yes&gen_hlth=poor&sex=female
-# http://127.0.0.1:39458/pred?high_bp=no&bmi=40&smoker=no&phys_activity=no&hvy_alcohol_consump=yes&gen_hlth=excellent&sex=male
+# http://127.0.0.1:8000/pred?high_bp=yes&high_chol=yes&bmi=35&smoker=yes&stroke=yes&heart_diseaseor_attack=yes&phys_activity=no&hvy_alcohol_consump=yes&gen_hlth=poor&sex=female
+# http://127.0.0.1:8000/pred?high_bp=no&smoker=no&stroke=yes&heart_diseaseor_attack=yes&phys_activity=no&hvy_alcohol_consump=yes&gen_hlth=poor&sex=female
+# http://127.0.0.1:8000/pred?high_bp=no&bmi=40&smoker=no&phys_activity=no&hvy_alcohol_consump=yes&gen_hlth=excellent&sex=male
 
 #* Confusion Matrix
 #* @get /confusion
