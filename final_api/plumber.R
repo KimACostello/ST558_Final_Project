@@ -114,12 +114,13 @@ function(high_bp = bp_mode,
          gen_hlth = gen_hlth_mode, 
          sex = sex_mode) {
   
-  #Function for the statistical modes to use in the pred endpoint since the mode() function in r returns the storage type. 
+  #Function for the statistical mode since the mode function in r returns the storage type. 
   get_mode <- function(x) {
     ux <- unique(x)
     ux[which.max(tabulate(match(x, ux)))]
   }
   
+  #get mode/mean for default values
   bp_mode = get_mode(diabetes_data$high_bp) 
   chol_mode = get_mode(diabetes_data$high_chol) 
   bmi_mean = mean(diabetes_data$bmi) 
@@ -131,6 +132,7 @@ function(high_bp = bp_mode,
   gen_hlth_mode = get_mode(diabetes_data$gen_hlth) 
   sex_mode = get_mode(diabetes_data$sex)
 
+  #put predictor values in a tibble
   new_data <- tibble(high_bp = factor(high_bp, levels = c("no", "yes")),
                      high_chol = factor(high_chol, levels = c("no", "yes")),
                      bmi = as.numeric(bmi),
@@ -148,6 +150,7 @@ function(high_bp = bp_mode,
                                                             "poor")),
                      sex = factor(sex, levels = c("female", "male")))
   
+  #obtain predictions from best model
   predict(forest_fit, new_data = new_data)
   
   }
@@ -162,13 +165,17 @@ function(high_bp = bp_mode,
 #* @get /confusion
 #* @serializer png
 function() {
+  #get predictions
   predictions <- predict(forest_fit, new_data = diabetes_data)
   
+  #add to data set
   data_with_predictions <- diabetes_data |>
     bind_cols(predictions)
   
+  #create confusion matrix
   cm <- conf_mat(data_with_predictions, truth = diabetes_binary, estimate = .pred_class)
   
+  #plot the confusion matrix
   print(autoplot(cm, type = "heatmap"))
   }
 
