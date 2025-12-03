@@ -99,7 +99,7 @@ function() {
 #* @param stroke yes or no
 #* @param heart_diseaseor_attack yes or no
 #* @param phys_activity yes or no
-#* @param hvy_alcohol_consump No or Yes
+#* @param hvy_alcohol_consump yes or no
 #* @param gen_hlth excellent, very good, good, fair, or poor
 #* @param sex female or male
 #* @get /pred
